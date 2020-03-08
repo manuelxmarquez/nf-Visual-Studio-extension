@@ -67,6 +67,13 @@ namespace nanoFramework.Tools.VisualStudio.Extension
 
         public async Task DeployAsync(CancellationToken cancellationToken, TextWriter outputPaneWriter)
         {
+            if (ServiceProvider == null)
+            {
+#pragma warning disable S112 // OK to use Exception here
+                throw new Exception("There is no device selected. Please select a device in Device Explorer tool window.");
+#pragma warning restore S112 // General exceptions should never be thrown
+            }
+
             List<byte[]> assemblies = new List<byte[]>();
             string targetFlashDumpFileName = "";
             int retryCount = 0;
@@ -99,7 +106,7 @@ namespace nanoFramework.Tools.VisualStudio.Extension
             }
 
             // just in case....
-            if (_viewModelLocator?.DeviceExplorer.SelectedDevice == null)
+            if (_viewModelLocator?.DeviceExplorer?.SelectedDevice == null)
             {
                 // can't debug
                 // throw exception to signal deployment failure
@@ -466,7 +473,7 @@ namespace nanoFramework.Tools.VisualStudio.Extension
                 using (FileStream fs = File.Open(peItem.Path, FileMode.Open, FileAccess.Read))
                 {
                     CLRCapabilities.NativeAssemblyProperties nativeAssembly;
-                    
+
                     // read the PE checksum from the byte array at position 0x14
                     byte[] buffer = new byte[4];
                     fs.Position = 0x14;
