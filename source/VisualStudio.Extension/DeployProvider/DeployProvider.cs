@@ -368,6 +368,9 @@ namespace nanoFramework.Tools.VisualStudio.Extension
                             // create a progress indicator to be used by deployment operation to post debug messages
                             var progressIndicator = new Progress<string>(MessageCentre.InternalErrorMessage);
 
+                            // Display progress to the output window in case an error occurs so the user can debug the issue
+                            progressIndicator.ProgressChanged += (s, e) => outputPaneWriter.WriteLineAsync(e);
+
                             await Task.Yield();
 
                             await Task.Run(async delegate
